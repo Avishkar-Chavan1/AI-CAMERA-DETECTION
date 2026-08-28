@@ -1,14 +1,19 @@
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PIP_DEFAULT_TIMEOUT=300 \
+    PIP_RETRIES=10
 
 WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY backend ./backend
 COPY dashboard ./dashboard
-RUN pip install --no-cache-dir .
+COPY vision ./vision
+COPY best.pt ./best.pt
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
+    && pip install --no-cache-dir ".[vision]"
 
 EXPOSE 8501
 

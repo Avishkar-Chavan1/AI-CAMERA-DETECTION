@@ -1,3 +1,17 @@
+**/__pycache__/
+.git/
+.venv/
+.env
+data/
+runs/
+test_inputs/
+tests/
+reports/
+*.pt
+!best.pt
+*.pth
+*.onnx
+*.egg-info/
 .git
 .venv
 __pycache__
