@@ -1,5 +1,25 @@
 # Industrial Safety AI Platform
 
+## Current Progress
+
+- [x] Streamlit dashboard
+- [x] FastAPI inference backend
+- [x] YOLO-based detection
+- [x] Dockerfile
+- [x] Docker image builds successfully
+- [x] Docker container runs successfully
+- [x] Backend health check
+- [x] Local frontend-backend integration
+- [x] Model loading verification inside Docker
+- [ ] Full image inference validation against the live API
+- [ ] Full video validation
+- [ ] Live camera validation
+- [ ] Docker Compose complete-system setup
+- [ ] CI/CD
+- [ ] Cloud deployment
+- [ ] Production monitoring
+- [ ] Horizontal scaling
+
 FastAPI and Streamlit services for image, video, and local webcam PPE inference using
 the supplied YOLO checkpoint. The API accepts media bytes only and never accepts a
 client filesystem path.
@@ -16,6 +36,10 @@ client filesystem path.
 The API loads `best.pt` once during application startup. If the model is unavailable or
 corrupt, the process stays available for diagnostics and `/api/v1/health` reports a
 degraded state; inference requests return HTTP 503.
+
+The verified `best.pt` class names are `helmet`, `gloves`, `vest`, `boots`, `goggles`,
+`none`, `Person`, `no_helmet`, `no_goggle`, `no_gloves`, and `no_boots`. The model has no
+`no_vest` or `no_goggles` class, so those violations cannot be detected explicitly.
 
 ## Requirements and installation
 
@@ -115,6 +139,15 @@ Inference events are persisted to SQLite at `runs/inference/events.db` by defaul
 include source, detected classes, confidence, violation status, violation count, and
 structured detection details. Uploaded video bytes are never stored in the database.
 
+The default confidence threshold is `0.25` and the default IoU threshold is `0.45`.
+The API supports JPEG, PNG, WEBP, and BMP images plus MP4, AVI, MOV, MKV, and WEBM
+videos. A local webcam is supported by the host-side Streamlit application; the
+containerized dashboard cannot provide a desktop OpenCV window or remote camera feed.
+
+The compliance result is `VIOLATION` only for explicit violation detections, `SAFE` only
+when every detected person has the required helmet and vest evidence, and `UNKNOWN` when
+there is no person or insufficient PPE evidence. `SAFE` is not a safety certification.
+
 ## Run the dashboard
 
 In a second terminal:
@@ -139,8 +172,7 @@ winget install --id Docker.DockerDesktop --source winget
 ```
 
 Restart Windows if requested, launch Docker Desktop, and wait until its engine reports
-from compliant PPE evidence, and displays persisted detection history from the API. Local
-webcam violations use the same SQLite event store.
+ready. The API and dashboard Compose services use the same CPU-only inference setup.
 
 Build and run the API image from the repository root:
 
@@ -158,6 +190,13 @@ docker compose -f docker/compose.yml up --build
 
 Compose exposes the API on `${PORT:-8000}` and Streamlit on port 8501. CPU deployment
 is supported; inference speed and memory use depend on the host and media resolution.
+Inspect service logs with `docker compose -f docker/compose.yml logs -f api`.
+
+The intended architecture is:
+
+```text
+Streamlit -> FastAPI -> YOLO inference -> detection and compliance result
+```
 
 ## Testing
 
@@ -165,6 +204,10 @@ is supported; inference speed and memory use depend on the host and media resolu
 .\.venv\Scripts\python.exe -m pytest
 .\.venv\Scripts\python.exe -m ruff check .
 ```
+
+The project uses CPU-only PyTorch intentionally. The main bottlenecks are model inference,
+image resolution, and video frame count; benchmark representative site media before
+choosing production hardware.
 
 ## Limitations and deployment notes
 
@@ -179,3 +222,9 @@ Before public deployment, provide `best.pt` through the image build context or a
 artifact mechanism, restrict network access as appropriate, add authentication and rate
 limits, and replace local CSV storage with a managed database. Do not commit or push
 automatically from this project.
+
+The next deployment architecture is GitHub -> CI/CD -> Docker image -> container registry
+-> AWS/Azure/GCP -> multiple backend instances -> load balancer -> monitoring/logging.
+For industrial edge deployment, use Industrial Camera -> Edge Computer -> Docker ->
+FastAPI + YOLO -> local dashboard/API -> optional cloud synchronization. Cloud deployment
+and horizontal scaling are intentionally not implemented yet.

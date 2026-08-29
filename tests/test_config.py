@@ -24,6 +24,13 @@ def test_settings_accept_environment_values() -> None:
     assert settings.app_env == "production"
     assert settings.log_level == "DEBUG"
     assert settings.api_port == 9000
+    assert settings.model_path == "best.pt"
+
+
+def test_api_model_path_does_not_require_phase_two_class_mapping() -> None:
+    settings = Settings(_env_file=None, model_path="best.pt")
+
+    assert settings.model_path == "best.pt"
 
 
 def test_settings_reject_invalid_log_level() -> None:

@@ -21,7 +21,7 @@ services:
       API_INFERENCE_TIMEOUT_SECONDS: ${API_INFERENCE_TIMEOUT_SECONDS:-300}
       API_EVENT_LOG_PATH: ${API_EVENT_LOG_PATH:-runs/inference/events.db}
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/ready')"]
+      test: ["CMD", "python", "-c", "import os, urllib.request; urllib.request.urlopen('http://127.0.0.1:' + os.environ.get('PORT', '8000') + '/api/v1/ready')"]
       interval: 30s
       timeout: 5s
       start_period: 60s

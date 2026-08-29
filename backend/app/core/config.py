@@ -34,10 +34,8 @@ class Settings(BaseSettings):
 
     vision_source: str | None = None
     vision_person_model: str = "yolo11n.pt"
-    vision_ppe_model: str | None = Field(
-        default=None,
-        validation_alias=AliasChoices("MODEL_PATH", "VISION_PPE_MODEL"),
-    )
+    model_path: str = Field(default="best.pt", validation_alias=AliasChoices("MODEL_PATH"))
+    vision_ppe_model: str | None = Field(default=None, validation_alias=AliasChoices("VISION_PPE_MODEL"))
     vision_ppe_class_map: dict[str, str] | None = None
     vision_tracker: Literal["bytetrack.yaml", "botsort.yaml"] = "bytetrack.yaml"
     vision_confidence: float = Field(default=0.35, gt=0.0, le=1.0)
@@ -68,7 +66,7 @@ class Settings(BaseSettings):
             raise ValueError(message)
         return normalized
 
-    @field_validator("vision_source", "vision_ppe_model", mode="before")
+    @field_validator("vision_source", "model_path", "vision_ppe_model", mode="before")
     @classmethod
     def normalize_optional_strings(cls, value: object) -> object:
         """Treat blank environment values as intentionally unset."""

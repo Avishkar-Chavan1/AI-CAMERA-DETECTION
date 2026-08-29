@@ -36,9 +36,24 @@ def compliance_for(detections: tuple[DetectionRecord, ...]):
     return analyze_compliance(observations, people)
 
 
+def compliance_status(summary: object) -> str:
+    """Return a conservative overall status for a compliance summary."""
+    if summary.workers_with_violations:
+        return "VIOLATION"
+    if not summary.total_people or summary.safe_workers != summary.total_people:
+        return "UNKNOWN"
+    return "SAFE"
+
+
 def show_detections(detections: tuple[DetectionRecord, ...]) -> None:
     workers, summary = compliance_for(detections)
-    st.subheader("VIOLATION DETECTED" if summary.workers_with_violations else "SAFE")
+    status = compliance_status(summary)
+    labels = {
+        "VIOLATION": "VIOLATION DETECTED",
+        "SAFE": "SAFE",
+        "UNKNOWN": "UNKNOWN / INSUFFICIENT EVIDENCE",
+    }
+    st.subheader(labels[status])
     st.metric("Total people detected", summary.total_people)
     st.metric("Safe workers", summary.safe_workers)
     st.metric("Workers with violations", summary.workers_with_violations)
@@ -203,7 +218,7 @@ def process_video_locally(engine: PpeInferenceEngine, uploaded_file: object, eve
             writer.write(annotated)
             frame_placeholder.image(annotated, channels="BGR", use_container_width=True)
             status_placeholder.write(
-                f"{'VIOLATION DETECTED' if summary.workers_with_violations else 'SAFE'} | "
+                f"{compliance_status(summary)} | "
                 f"people: {summary.total_people} | violations: {summary.total_violations}"
             )
     finally:
@@ -248,7 +263,7 @@ def run_live_camera(engine: PpeInferenceEngine, event_log: list[dict[str, object
                         for item in detections
                     ],
                 )
-            status = "VIOLATION DETECTED" if summary.workers_with_violations else "SAFE"
+            status = compliance_status(summary)
             cv2.putText(annotated, status, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv2.imshow("Industrial Safety AI - press Q or Esc to stop", annotated)
             if cv2.waitKey(1) & 0xFF in {27, ord("q"), ord("Q")}:

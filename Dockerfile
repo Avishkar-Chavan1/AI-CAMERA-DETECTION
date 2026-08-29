@@ -13,7 +13,9 @@ COPY backend ./backend
 COPY vision ./vision
 COPY best.pt ./best.pt
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
-    && pip install --no-cache-dir ".[vision]"
+    && pip install --no-cache-dir ".[vision]" \
+    && pip uninstall -y opencv-python \
+    && pip install --no-cache-dir --force-reinstall --no-deps "opencv-python-headless>=4.10,<5.0"
 
 EXPOSE 8000
 

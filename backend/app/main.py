@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Configure process-level dependencies around the application lifecycle."""
     settings: Settings = app.state.settings
     configure_logging(settings)
-    model_path = Path(settings.vision_ppe_model or "best.pt")
+    model_path = Path(settings.model_path)
     if not model_path.is_absolute():
         model_path = PROJECT_ROOT / model_path
     app.state.engine = None
