@@ -185,12 +185,12 @@ The root `Dockerfile` includes `backend/`, `vision/`, and `best.pt`, and starts 
 on `0.0.0.0` using `PORT`. It also includes a container healthcheck. For both services:
 
 ```powershell
-docker compose -f docker/compose.yml up --build
+docker compose up --build
 ```
 
 Compose exposes the API on `${PORT:-8000}` and Streamlit on port 8501. CPU deployment
 is supported; inference speed and memory use depend on the host and media resolution.
-Inspect service logs with `docker compose -f docker/compose.yml logs -f api`.
+Inspect service logs with `docker compose logs -f api`.
 
 The intended architecture is:
 

@@ -21,6 +21,7 @@ runs/
 test_inputs/images/*
 test_inputs/videos/*
 !test_inputs/README.md
+reports/
 runs/inference/*
 !runs/inference/.gitkeep
 *.log
