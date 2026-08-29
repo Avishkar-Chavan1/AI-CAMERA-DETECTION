@@ -14,24 +14,24 @@ venv/
 !.env.example
 
 # Runtime data
-data/
-!data/.gitkeep
-runs/
-!runs/.gitkeep
-test_inputs/images/*
-test_inputs/videos/*
-!test_inputs/README.md
-reports/
-runs/inference/*
-!runs/inference/.gitkeep
+# data/
+# !data/.gitkeep
+# runs/
+# !runs/.gitkeep
+# test_inputs/images/*
+# test_inputs/videos/*
+# !test_inputs/README.md
+# reports/
+# runs/inference/*
+# !runs/inference/.gitkeep
 *.log
 *.tmp
 
 # Local model artifacts; keep production weights in an artifact store or Git LFS.
-*.pt
-*.pth
-*.onnx
-!best.pt
+# *.pt
+# *.pth
+# *.onnx
+# !best.pt
 
 # IDE and OS files
 .vscode/
