@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: industrial-safety-api
+    env: docker
+    region: ohio
+    plan: standard
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: LOG_JSON
+        value: true
+      - key: LOG_LEVEL
+        value: INFO
+      - key: API_AUTH_ENABLED
+        value: true
+      - key: PORT
+        value: 8000
+      - key: API_BASE_URL
+        scope: build
+        value: https://industrial-safety-api.onrender.com
+      - key: API_CORS_ORIGINS
+        value: '["https://industrial-safety-dashboard.onrender.com"]'
+      - key: API_MAX_IMAGE_BYTES
+        value: 20000000
+      - key: API_MAX_VIDEO_BYTES
+        value: 500000000
+      - key: API_MAX_VIDEO_FRAMES
+        value: 10000
+      - key: API_RATE_LIMIT
+        value: 30
+      - key: API_RATE_WINDOW_SECONDS
+        value: 60
+      - key: API_INFERENCE_TIMEOUT_SECONDS
+        value: 300
+      - key: API_EVENT_LOG_PATH
+        value: /var/data/events.db
