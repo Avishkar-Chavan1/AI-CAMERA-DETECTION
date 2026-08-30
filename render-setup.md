@@ -31,12 +31,13 @@
 ### 2.2 Configure Web Service
 
 **Basic Settings:**
-- **Name**: `industrial-safety-api`
+- **Name**: `plantsync-api`
 - **Environment**: `Docker`
 - **Build Command**: (leave blank - uses Dockerfile)
 - **Start Command**: (leave blank - uses Dockerfile CMD)
 - **Instance Type**: `Standard` ($7/month) or `Pro` ($12/month)
 - **Auto-Deploy**: Enable
+- **Custom Domain**: `api.plantsync.in`
 
 **Environment Variables:**
 
@@ -48,8 +49,8 @@ LOG_JSON=true
 LOG_LEVEL=INFO
 API_AUTH_ENABLED=true
 PORT=8000
-API_BASE_URL=https://industrial-safety-api.onrender.com
-API_CORS_ORIGINS=["https://industrial-safety-dashboard.onrender.com"]
+API_BASE_URL=https://api.plantsync.in
+API_CORS_ORIGINS=["https://plantsync.in","https://www.plantsync.in","https://dashboard.plantsync.in"]
 API_MAX_IMAGE_BYTES=20000000
 API_MAX_VIDEO_BYTES=500000000
 API_MAX_VIDEO_FRAMES=10000
@@ -82,8 +83,9 @@ For Streamlit dashboard on Render:
 1. Create new **Web Service**
 2. Use `docker/Dockerfile.dashboard`
 3. Set environment variable:
-   - `API_BASE_URL=https://industrial-safety-api.onrender.com`
-4. Dashboard will be at `https://industrial-safety-dashboard.onrender.com`
+   - `API_BASE_URL=https://api.plantsync.in`
+4. Set **Custom Domain**: `dashboard.plantsync.in`
+5. Dashboard will be at `https://dashboard.plantsync.in`
 
 ## Step 4: Monitor Deployment
 
@@ -92,7 +94,7 @@ In Render Dashboard → Your Service → **Logs**
 
 ### 4.2 Check Health
 ```powershell
-Invoke-WebRequest -Uri "https://industrial-safety-api.onrender.com/api/v1/health" `
+Invoke-WebRequest -Uri "https://api.plantsync.in/api/v1/health" `
   -Headers @{"X-API-Key" = "your-api-key"}
 ```
 
@@ -169,12 +171,21 @@ Render automatically deploys when you:
 
 **Disable auto-deploy:** Dashboard → Settings → Auto Deploy → Disable
 
-## Custom Domain (Optional)
+## Custom Domain Setup
 
-1. Dashboard → Settings → **Custom Domain**
-2. Add your domain: `api.yourdomain.com`
-3. Update DNS records (CNAME to Render)
-4. Configure SSL (automatic with Render)
+### For API (`api.plantsync.in`):
+1. In Render Dashboard → Settings → **Custom Domain**
+2. Add: `api.plantsync.in`
+3. Update DNS at your registrar:
+   - Type: `CNAME`
+   - Name: `api`
+   - Value: Render-provided CNAME (from dashboard)
+4. SSL: Automatic with Render ✅
+
+### For Dashboard (`dashboard.plantsync.in`):
+1. Same process for dashboard service
+2. Add: `dashboard.plantsync.in`
+3. Update DNS accordingly
 
 ## Scaling
 
