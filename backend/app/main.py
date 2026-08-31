@@ -87,6 +87,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def health_check() -> dict[str, str]:
         """Report that the API process is available."""
         return {"status": "ok", "environment": resolved_settings.app_env}
+    @app.get("/", tags=["platform"])
+async def root():
+    return {
+        "status": "ok",
+        "service": resolved_settings.app_name,
+        "message": "Industrial Safety AI Platform API is running",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
     return app
 
